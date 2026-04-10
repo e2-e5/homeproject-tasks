@@ -1,0 +1,14 @@
+# Large files — don't commit to git
+brands/**/*.pdf
+brands/**/*.xlsx
+brands/**/*.xls
+brands/_materials/
+claw-code-main/
+claw-code-main.zip
+paperclip-master.zip
+Materials/
+data/crm.db
+.port_sessions/
+__pycache__/
+*.pyc
+.DS_Store

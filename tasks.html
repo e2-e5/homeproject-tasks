@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Project — Задачи</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0f; color: #e0e0e0; padding: 20px; font-size: 15px; }
+  h1 { text-align: center; font-size: 28px; margin-bottom: 4px; color: #fff; }
+  .subtitle { text-align: center; color: #888; margin-bottom: 20px; font-size: 14px; }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  .stats { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+  .stat { background: #1e1e2e; border-radius: 6px; padding: 6px 14px; font-size: 13px; }
+  .stat strong { color: #fff; }
+
+  .filters { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+  .fbtn { background: #1e1e2e; border: 1px solid #2a2a3a; border-radius: 6px; padding: 5px 12px; color: #888; cursor: pointer; font-size: 12px; }
+  .fbtn:hover { color: #fff; border-color: #4a4a5a; }
+  .fbtn.active { border-color: #4ade80; color: #4ade80; background: #1a2a1a; }
+
+  .section-title { padding: 10px 0 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #555; border-bottom: 1px solid #1a1a2a; margin-bottom: 4px; margin-top: 16px; }
+
+  .task { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #1a1a2a; border-radius: 4px; transition: opacity 0.2s; }
+  .task:hover { background: #1a1a2a; }
+  .task.checked { opacity: 0.35; }
+  .task.checked .task-text { text-decoration: line-through; }
+
+  .task input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; accent-color: #4ade80; cursor: pointer; flex-shrink: 0; }
+
+  .task-body { flex: 1; min-width: 0; }
+  .task-text { font-size: 15px; line-height: 1.5; }
+  .task-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 8px; font-size: 11px; }
+  .b-andrey { background: #3a2a1a; color: #facc15; }
+  .b-alexey { background: #1a2a3a; color: #60a5fa; }
+  .b-both { background: #2a1a3a; color: #a78bfa; }
+  .b-suppliers { background: #2a2a1a; color: #eab308; }
+  .b-infra { background: #1a2a3a; color: #60a5fa; }
+  .b-marketing { background: #1a3a1a; color: #4ade80; }
+  .b-product { background: #1a3a3a; color: #22d3ee; }
+  .b-marketplace { background: #3a1a1a; color: #f87171; }
+  .b-studios { background: #2a1a3a; color: #a78bfa; }
+  .b-deadline { background: #1e1e2e; color: #888; }
+  .b-deadline.soon { color: #facc15; }
+  .b-question { background: #2a1a1a; color: #f87171; border: 1px dashed #f87171; }
+
+  .task-note { font-size: 12px; color: #555; margin-top: 2px; }
+
+  .task.highlight { border-left: 3px solid #eab308; padding-left: 9px; }
+
+  @media (max-width: 600px) { body { padding: 10px; } .task-text { font-size: 14px; } }
+</style>
+</head>
+<body>
+
+<h1>Home Project — Задачи</h1>
+<p class="subtitle">Phase 0 — Bootstrap | Обновлено: 10.04.2026</p>
+
+<div class="container">
+
+<div class="stats" id="stats"></div>
+
+<div class="filters">
+  <div class="fbtn active" onclick="filterTasks('all')">Все</div>
+  <div class="fbtn" onclick="filterTasks('andrey')">Андрей</div>
+  <div class="fbtn" onclick="filterTasks('alexey')">Алексей</div>
+  <div class="fbtn" onclick="filterTasks('active')">Активные</div>
+  <div class="fbtn" onclick="filterTasks('done')">Сделано</div>
+</div>
+
+<div id="tasks">
+
+<div class="section-title">Сделано</div>
+
+<div class="task" data-who="alexey" data-track="product" data-done="true">
+  <input type="checkbox" checked>
+  <div class="task-body">
+    <div class="task-text">Скачать все прайсы и каталоги 9 брендов</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-product">Продукт</span> <span class="badge b-deadline">09.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="product" data-done="true">
+  <input type="checkbox" checked>
+  <div class="task-body">
+    <div class="task-text">Скачать 10 баз контактов</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-product">Продукт</span> <span class="badge b-deadline">09.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="product" data-done="true">
+  <input type="checkbox" checked>
+  <div class="task-body">
+    <div class="task-text">Анализ всех прайсов, контактов, каталогов</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-product">Продукт</span> <span class="badge b-deadline">09.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="infra" data-done="true">
+  <input type="checkbox" checked>
+  <div class="task-body">
+    <div class="task-text">Собрать единую CRM (9 718 контактов, SQLite)</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-infra">Инфра</span> <span class="badge b-deadline">09.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="suppliers" data-done="true">
+  <input type="checkbox" checked>
+  <div class="task-body">
+    <div class="task-text">Закупочные условия зафиксированы (все поставщики)</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">09.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="infra" data-done="true">
+  <input type="checkbox" checked>
+  <div class="task-body">
+    <div class="task-text">CLAUDE.md, INDEX.md, resources_map, стратегия, маркетинг</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-infra">Инфра</span> <span class="badge b-deadline">10.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="marketing" data-done="true">
+  <input type="checkbox" checked>
+  <div class="task-body">
+    <div class="task-text">Конкурентные преимущества (13 пунктов) + анализ финмодели</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-marketing">Маркетинг</span> <span class="badge b-deadline">10.04</span></div>
+  </div>
+</div>
+
+<div class="section-title">Андрей — поставщики и контент</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Передать API-ключ InSales Алексею</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-infra">Инфра</span> <span class="badge b-deadline soon">до 15.04</span></div>
+    <div class="task-note">Блокирует: загрузку BORA/Fhiaba, аудит каталога, webhook</div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Homeier: финализировать договор, запросить фид остатков</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline soon">до 15.04</span></div>
+    <div class="task-note">XML/Excel/API — уточнить формат</div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">HOMETEK: договор, запросить фид остатков</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline soon">до 15.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Graude: подтвердить условия (акции, отсрочка, доставка), запросить фид</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">до 15.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Уточнить по Salini: поставщик, прайс</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">до 15.04</span></div>
+    <div class="task-note">489 товаров на сайте, прайса нет</div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Уточнить скидку по Brandt</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">до 20.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Запросить прайс и каталог ILVE</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">до 20.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Проверить/обновить юр. документы на сайте (оферта, реквизиты)</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">до 20.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Документы: партнёрские договора + оферта для агентов</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">до 20.04</span></div>
+    <div class="task-note">Договор возмездного оказания услуг, оферта без ручной подписи</div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Определить логистику первых заказов (склад поставщика → клиент)</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">до 20.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="suppliers">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Активировать 5 растущих партнёров Homeier</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-suppliers">Поставщики</span> <span class="badge b-deadline">до 20.04</span></div>
+    <div class="task-note">HV-Trade, Archeon, KUP, VKP, Premier-BT</div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="marketing">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Контент для страницы "Для архитекторов" (тексты, условия)</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-marketing">Маркетинг</span> <span class="badge b-deadline">до 20.04</span></div>
+    <div class="task-note">→ Алексею для вёрстки на сайте</div>
+  </div>
+</div>
+
+<div class="task" data-who="andrey" data-track="product">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Материалы по BORA и Fhiaba (фото, тексты, характеристики)</div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-product">Продукт</span> <span class="badge b-deadline soon">до 15.04</span></div>
+    <div class="task-note">→ Алексею для загрузки на сайт</div>
+  </div>
+</div>
+
+<div class="task highlight" data-who="andrey" data-track="marketing">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text"><strong>Интервью с 5-10 дизайнерами</strong></div>
+    <div class="task-meta"><span class="badge b-andrey">Андрей</span> <span class="badge b-marketing">Маркетинг</span> <span class="badge b-question">Под ?</span> <span class="badge b-deadline">до 30.04</span></div>
+    <div class="task-note">Как ищут технику, что болит, какие каналы. Результаты → Алексею для Track 1</div>
+  </div>
+</div>
+
+<div class="section-title">Алексей — техническая обвязка</div>
+
+<div class="task" data-who="alexey" data-track="infra">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Подключиться к InSales API</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-infra">Инфра</span> <span class="badge b-deadline">после API-ключа</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="product">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Загрузить BORA (181 SKU) + Fhiaba (445 SKU) на сайт</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-product">Продукт</span> <span class="badge b-deadline">после API + материалов</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="product">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Аудит цен: сайт vs прайсы → отчёт Андрею</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-product">Продукт</span> <span class="badge b-deadline">после API-ключа</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="marketing">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Сверстать страницу "Для архитекторов" на сайте</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-marketing">Маркетинг</span> <span class="badge b-deadline">после контента от Андрея</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="marketing">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Настроить Unisender: импорт базы, шаблоны → передать Андрею</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-marketing">Маркетинг</span> <span class="badge b-deadline">до 20.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="marketing">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Создать Telegram-канал + настроить бота (уведомления, /stock, /crm)</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-marketing">Маркетинг</span> <span class="badge b-deadline">до 20.04</span></div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="infra">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Поднять VPS + cron для синхронизации остатков</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-infra">Инфра</span> <span class="badge b-deadline">до 20.04</span></div>
+    <div class="task-note">Timeweb ~300 руб/мес</div>
+  </div>
+</div>
+
+<div class="task highlight" data-who="alexey" data-track="marketing">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text"><strong>Переработать Track 1 (дизайнеры) по результатам интервью</strong></div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-marketing">Маркетинг</span> <span class="badge b-question">Под ?</span> <span class="badge b-deadline">после интервью</span></div>
+  </div>
+</div>
+
+<div class="section-title">Маркетплейсы — Graude</div>
+
+<div class="task" data-who="both" data-track="marketplace">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Регистрация на Авито, первые 20 карточек Graude</div>
+    <div class="task-meta"><span class="badge b-both">Оба</span> <span class="badge b-marketplace">Маркетплейс</span> <span class="badge b-deadline">до 20.04</span></div>
+    <div class="task-note">Solo-техника: стиралки, сушилки, отдельностоящие</div>
+  </div>
+</div>
+
+<div class="task" data-who="alexey" data-track="marketplace">
+  <input type="checkbox">
+  <div class="task-body">
+    <div class="task-text">Яндекс.Маркет: регистрация + товарный фид Graude</div>
+    <div class="task-meta"><span class="badge b-alexey">Алексей</span> <span class="badge b-marketplace">Маркетплейс</span> <span class="badge b-deadline">до 30.04</span></div>
+  </div>
+</div>
+
+</div><!-- /tasks -->
+</div><!-- /container -->
+
+<script>
+// Save/restore checkbox state in localStorage
+const STORAGE_KEY = 'hp_tasks_state';
+
+function saveState() {
+  const checkboxes = document.querySelectorAll('#tasks input[type="checkbox"]');
+  const state = Array.from(checkboxes).map(cb => cb.checked);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateUI();
+}
+
+function loadState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return;
+  const state = JSON.parse(saved);
+  const checkboxes = document.querySelectorAll('#tasks input[type="checkbox"]');
+  checkboxes.forEach((cb, i) => {
+    if (i < state.length) cb.checked = state[i];
+  });
+  updateUI();
+}
+
+function updateUI() {
+  // Update visual state
+  document.querySelectorAll('#tasks .task').forEach(task => {
+    const cb = task.querySelector('input[type="checkbox"]');
+    task.classList.toggle('checked', cb.checked);
+  });
+
+  // Update stats
+  const all = document.querySelectorAll('#tasks .task');
+  const done = document.querySelectorAll('#tasks .task input:checked');
+  const active = all.length - done.length;
+
+  const andreyAll = document.querySelectorAll('#tasks .task[data-who="andrey"]');
+  const andreyDone = document.querySelectorAll('#tasks .task[data-who="andrey"] input:checked');
+  const alexeyAll = document.querySelectorAll('#tasks .task[data-who="alexey"]');
+  const alexeyDone = document.querySelectorAll('#tasks .task[data-who="alexey"] input:checked');
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat">Всего: <strong>${all.length}</strong></div>
+    <div class="stat" style="color:#4ade80;">Сделано: <strong>${done.length}</strong></div>
+    <div class="stat" style="color:#888;">Осталось: <strong>${active}</strong></div>
+    <div class="stat" style="color:#facc15;">Андрей: <strong>${andreyDone.length}/${andreyAll.length}</strong></div>
+    <div class="stat" style="color:#60a5fa;">Алексей: <strong>${alexeyDone.length}/${alexeyAll.length}</strong></div>
+  `;
+}
+
+function filterTasks(filter) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  document.querySelectorAll('#tasks .task').forEach(task => {
+    const who = task.dataset.who;
+    const isDone = task.querySelector('input').checked;
+    let show = true;
+
+    if (filter === 'andrey') show = who === 'andrey';
+    else if (filter === 'alexey') show = who === 'alexey';
+    else if (filter === 'active') show = !isDone;
+    else if (filter === 'done') show = isDone;
+
+    task.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  document.querySelectorAll('#tasks input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', saveState);
+  });
+});
+</script>
+
+</body>
+</html>
