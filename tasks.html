@@ -11,14 +11,31 @@
   .subtitle { text-align: center; color: #888; margin-bottom: 20px; font-size: 14px; }
   .container { max-width: 900px; margin: 0 auto; }
 
-  .stats { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+  .stats { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
   .stat { background: #1e1e2e; border-radius: 6px; padding: 6px 14px; font-size: 13px; }
   .stat strong { color: #fff; }
 
   .filters { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
-  .fbtn { background: #1e1e2e; border: 1px solid #2a2a3a; border-radius: 6px; padding: 5px 12px; color: #888; cursor: pointer; font-size: 12px; }
+  .fbtn { background: #1e1e2e; border: 1px solid #2a2a3a; border-radius: 6px; padding: 5px 12px; color: #888; cursor: pointer; font-size: 12px; user-select: none; }
   .fbtn:hover { color: #fff; border-color: #4a4a5a; }
   .fbtn.active { border-color: #4ade80; color: #4ade80; background: #1a2a1a; }
+
+  /* Add task form */
+  .add-form { background: #16161f; border: 1px solid #2a2a3a; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+  .add-form.collapsed .add-body { display: none; }
+  .add-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+  .add-toggle h3 { font-size: 14px; color: #4ade80; }
+  .add-toggle .arrow { font-size: 18px; color: #4ade80; transition: transform 0.2s; }
+  .add-form.collapsed .arrow { transform: rotate(-90deg); }
+  .add-body { margin-top: 14px; }
+  .add-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .add-row input[type="text"] { flex: 1; min-width: 200px; background: #1e1e2e; border: 1px solid #2a2a3a; border-radius: 6px; padding: 8px 12px; color: #e0e0e0; font-size: 14px; outline: none; }
+  .add-row input:focus { border-color: #4ade80; }
+  .add-row select { background: #1e1e2e; border: 1px solid #2a2a3a; border-radius: 6px; padding: 8px 10px; color: #e0e0e0; font-size: 13px; outline: none; cursor: pointer; }
+  .add-row select:focus { border-color: #4ade80; }
+  .add-btn { background: #4ade80; color: #0a0a0f; border: none; border-radius: 6px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .add-btn:hover { background: #22c55e; }
+  .add-btn:disabled { background: #2a2a3a; color: #666; cursor: not-allowed; }
 
   .section-title { padding: 10px 0 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #555; border-bottom: 1px solid #1a1a2a; margin-bottom: 4px; margin-top: 16px; }
 
@@ -49,10 +66,18 @@
   .task-note { font-size: 12px; color: #555; margin-top: 2px; }
   .task.highlight { border-left: 3px solid #eab308; padding-left: 9px; }
 
+  .del-btn { background: none; border: none; color: #333; cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; margin-top: 1px; }
+  .del-btn:hover { color: #f87171; background: #2a1a1a; }
+
   .loading { text-align: center; padding: 40px; color: #888; }
   .sync-status { text-align: center; font-size: 11px; color: #444; margin-top: 20px; }
 
-  @media (max-width: 600px) { body { padding: 10px; } .task-text { font-size: 14px; } }
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    .task-text { font-size: 14px; }
+    .add-row { flex-direction: column; }
+    .add-row input[type="text"] { min-width: unset; }
+  }
 </style>
 </head>
 <body>
@@ -62,13 +87,45 @@
 
 <div class="container">
   <div class="stats" id="stats"></div>
-  <div class="filters">
-    <div class="fbtn active" onclick="filterTasks('all')">Все</div>
-    <div class="fbtn" onclick="filterTasks('andrey')">Андрей</div>
-    <div class="fbtn" onclick="filterTasks('alexey')">Алексей</div>
-    <div class="fbtn" onclick="filterTasks('active')">Активные</div>
-    <div class="fbtn" onclick="filterTasks('done')">Сделано</div>
+
+  <!-- ADD TASK FORM -->
+  <div class="add-form" id="addForm">
+    <div class="add-toggle" onclick="toggleForm()">
+      <h3>+ Новая задача</h3>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="add-body">
+      <div class="add-row">
+        <input type="text" id="newTitle" placeholder="Что нужно сделать..." onkeydown="if(event.key==='Enter')addTask()">
+      </div>
+      <div class="add-row">
+        <select id="newWho">
+          <option value="andrey">Андрей</option>
+          <option value="alexey">Алексей</option>
+          <option value="both">Оба</option>
+        </select>
+        <select id="newTrack">
+          <option value="suppliers">Поставщики</option>
+          <option value="infra">Инфра</option>
+          <option value="marketing">Маркетинг</option>
+          <option value="product">Продукт</option>
+          <option value="marketplace">Маркетплейс</option>
+        </select>
+        <input type="text" id="newDeadline" placeholder="Дедлайн (напр. до 20.04)" style="max-width:200px;">
+        <input type="text" id="newNotes" placeholder="Заметка (необязательно)" style="max-width:250px;">
+        <button class="add-btn" onclick="addTask()" id="addBtn">Добавить</button>
+      </div>
+    </div>
   </div>
+
+  <div class="filters">
+    <div class="fbtn active" onclick="filterTasks('all',event)">Все</div>
+    <div class="fbtn" onclick="filterTasks('andrey',event)">Андрей</div>
+    <div class="fbtn" onclick="filterTasks('alexey',event)">Алексей</div>
+    <div class="fbtn" onclick="filterTasks('active',event)">Активные</div>
+    <div class="fbtn" onclick="filterTasks('done',event)">Сделано</div>
+  </div>
+
   <div id="tasks"><div class="loading">Загрузка...</div></div>
   <div class="sync-status" id="sync"></div>
 </div>
@@ -114,6 +171,72 @@ async function toggleTask(id, done) {
   }
 }
 
+async function addTask() {
+  const title = document.getElementById('newTitle').value.trim();
+  if (!title) return;
+
+  const who = document.getElementById('newWho').value;
+  const track = document.getElementById('newTrack').value;
+  const deadline = document.getElementById('newDeadline').value.trim();
+  const notes = document.getElementById('newNotes').value.trim();
+
+  const sectionMap = { andrey: 'andrey', alexey: 'alexey', both: 'andrey' };
+  const maxPos = allTasks.length ? Math.max(...allTasks.map(t => t.position || 0)) : 0;
+
+  const task = {
+    id: 't' + Date.now(),
+    title,
+    who,
+    track,
+    done: false,
+    deadline: deadline || null,
+    notes: notes || null,
+    section: sectionMap[who],
+    highlight: false,
+    position: maxPos + 1
+  };
+
+  document.getElementById('addBtn').disabled = true;
+  showSync('Добавление...');
+
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/hp_tasks`, {
+      method: 'POST',
+      headers: { ...headers, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(task)
+    });
+    allTasks.push(task);
+    document.getElementById('newTitle').value = '';
+    document.getElementById('newDeadline').value = '';
+    document.getElementById('newNotes').value = '';
+    renderTasks();
+    showSync('Добавлено');
+  } catch (e) {
+    showSync('Ошибка добавления!');
+  }
+  document.getElementById('addBtn').disabled = false;
+}
+
+async function deleteTask(id) {
+  if (!confirm('Удалить задачу?')) return;
+  showSync('Удаление...');
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/hp_tasks?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: { ...headers, 'Prefer': 'return=minimal' }
+    });
+    allTasks = allTasks.filter(t => t.id !== id);
+    renderTasks();
+    showSync('Удалено');
+  } catch (e) {
+    showSync('Ошибка удаления!');
+  }
+}
+
+function toggleForm() {
+  document.getElementById('addForm').classList.toggle('collapsed');
+}
+
 function showSync(msg) {
   const el = document.getElementById('sync');
   el.textContent = msg + ' · ' + new Date().toLocaleTimeString('ru');
@@ -124,16 +247,15 @@ function renderTasks() {
   const container = document.getElementById('tasks');
   const sections = {
     'done': 'Сделано',
-    'andrey': 'Андрей — поставщики и контент',
-    'alexey': 'Алексей — техническая обвязка',
-    'marketplace': 'Маркетплейсы — Graude'
+    'andrey': 'Андрей',
+    'alexey': 'Алексей',
+    'marketplace': 'Маркетплейсы'
   };
 
   let html = '';
   for (const [sectionId, sectionTitle] of Object.entries(sections)) {
     const sectionTasks = allTasks.filter(t => t.section === sectionId);
     if (!sectionTasks.length) continue;
-
     const visible = sectionTasks.filter(t => matchesFilter(t));
     if (!visible.length) continue;
 
@@ -144,16 +266,11 @@ function renderTasks() {
       const trackClass = 'b-' + t.track;
       const trackLabel = {suppliers:'Поставщики',infra:'Инфра',marketing:'Маркетинг',product:'Продукт',marketplace:'Маркетплейс'}[t.track] || t.track;
       const deadlineClass = t.deadline && t.deadline.includes('15.04') ? 'soon' : '';
-      const checked = t.done ? 'checked' : '';
-      const taskClass = [
-        'task',
-        t.done ? 'checked' : '',
-        t.highlight ? 'highlight' : ''
-      ].filter(Boolean).join(' ');
+      const taskClass = ['task', t.done ? 'checked' : '', t.highlight ? 'highlight' : ''].filter(Boolean).join(' ');
 
       html += `
-        <div class="${taskClass}" data-who="${t.who}" data-id="${t.id}">
-          <input type="checkbox" ${checked} onchange="toggleTask('${t.id}', this.checked)">
+        <div class="${taskClass}">
+          <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${t.id}', this.checked)">
           <div class="task-body">
             <div class="task-text">${t.highlight ? '<strong>' + t.title + '</strong>' : t.title}</div>
             <div class="task-meta">
@@ -164,6 +281,7 @@ function renderTasks() {
             </div>
             ${t.notes ? `<div class="task-note">${t.notes}</div>` : ''}
           </div>
+          <button class="del-btn" onclick="deleteTask('${t.id}')" title="Удалить">×</button>
         </div>`;
     }
   }
@@ -174,24 +292,24 @@ function renderTasks() {
 
 function matchesFilter(t) {
   if (currentFilter === 'all') return true;
-  if (currentFilter === 'andrey') return t.who === 'andrey';
+  if (currentFilter === 'andrey') return t.who === 'andrey' || t.who === 'both';
   if (currentFilter === 'alexey') return t.who === 'alexey';
   if (currentFilter === 'active') return !t.done;
   if (currentFilter === 'done') return t.done;
   return true;
 }
 
-function filterTasks(filter) {
+function filterTasks(filter, event) {
   currentFilter = filter;
   document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  if (event) event.target.classList.add('active');
   renderTasks();
 }
 
 function updateStats() {
   const total = allTasks.length;
   const done = allTasks.filter(t => t.done).length;
-  const andreyAll = allTasks.filter(t => t.who === 'andrey');
+  const andreyAll = allTasks.filter(t => t.who === 'andrey' || t.who === 'both');
   const andreyDone = andreyAll.filter(t => t.done).length;
   const alexeyAll = allTasks.filter(t => t.who === 'alexey');
   const alexeyDone = alexeyAll.filter(t => t.done).length;
@@ -205,7 +323,6 @@ function updateStats() {
   `;
 }
 
-// Load on start
 loadTasks();
 </script>
 
